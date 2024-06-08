@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  category   String?
+  createdAt  DateTime  @default(now())
+  expiryDate DateTime?
+  id         String    @id @default(cuid())
+  name       String?
+  qrCodes    QrCode[]
+  quantity   Int?
+  updatedAt  DateTime  @updatedAt
+}
+
+model QrCode {
+  code      String?
+  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
+  isScanned Boolean?
+  product   Product?   @relation(fields: [productId], references: [id])
+  productId String?
+  registers Register[]
+  scanneds  Scanned[]
+  updatedAt DateTime   @updatedAt
+}
+
+model Scanned {
+  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid())
+  location  String?
+  qrCode    QrCode?   @relation(fields: [qrCodeId], references: [id])
+  qrCodeId  String?
+  scanDate  DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Register {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  qrCode    QrCode?  @relation(fields: [qrCodeId], references: [id])
+  qrCodeId  String?
+  updatedAt DateTime @updatedAt
+}
